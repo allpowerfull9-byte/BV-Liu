@@ -49,4 +49,20 @@ export RMS_GITHUB_REPO="$TARGET_REPO"
 export RMS_REGION="asia-east1"
 
 say "授權完成，開始全自動建立、部署、修復與驗收"
-exec bash bootstrap/RMS-AUTH-DEPLOY.sh
+set +e
+bash bootstrap/RMS-AUTH-DEPLOY.sh
+RC=$?
+set -e
+
+if [[ "$RC" -eq 0 ]]; then
+  gh issue create --repo "$PRIVATE_BOOTSTRAP_REPO" \
+    --title "[RMS LIVE PASS] ${TARGET_PROJECT}" \
+    --body "銳蒙斯獨立系統已完成建立、部署與驗收。\n\n- Firebase: https://${TARGET_PROJECT}.web.app\n- Project: ${TARGET_PROJECT}\n- Repository: ${TARGET_REPO}\n- Result: RMS_DEPLOY_PASS" >/dev/null || true
+  say "RMS_DEPLOY_PASS"
+else
+  gh issue create --repo "$PRIVATE_BOOTSTRAP_REPO" \
+    --title "[RMS LIVE FAIL] ${TARGET_PROJECT}" \
+    --body "銳蒙斯獨立部署未完成。\n\n- Exit code: ${RC}\n- Cloud Shell log: ${LOG}\n- 不含帳密或 Token。" >/dev/null || true
+  say "RMS_DEPLOY_FAIL"
+fi
+exit "$RC"
