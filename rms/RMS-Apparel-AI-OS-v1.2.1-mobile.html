@@ -1,0 +1,540 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0a0a0a">
+  <meta name="description" content="銳蒙斯成衣開發有限公司 AI 零思考營運系統">
+  <title>銳蒙斯 AI 成衣營運中樞</title>
+  <style>
+:root{
+  --bg:#f2f2f0;--panel:#fff;--ink:#101010;--muted:#707070;--line:#deded9;
+  --dark:#0a0a0a;--good:#1c6f45;--warn:#9a6113;--bad:#a83232;--radius:18px;
+  --shadow:0 12px 34px rgba(0,0,0,.07);
+}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;color:var(--ink);background:var(--bg)}
+button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
+.boot{position:fixed;inset:0;z-index:100;background:#0a0a0a;color:#fff;display:flex;align-items:center;justify-content:center;gap:18px}
+.boot-mark,.brand-mark{display:grid;place-items:center;background:#fff;color:#000;font-weight:900;letter-spacing:-1px}
+.boot-mark{width:76px;height:76px;border-radius:24px;font-size:25px}.boot div:last-child{display:flex;flex-direction:column;gap:6px}.boot span,.brand span{font-size:11px;letter-spacing:.12em;color:#8d8d8d}
+.auth-view{min-height:100vh;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at top right,#3b3b3b,#080808 45%)}
+.auth-card{width:min(460px,100%);background:#fff;padding:34px;border-radius:28px;box-shadow:0 24px 70px #0008}
+.brand{display:flex;align-items:center;gap:12px}.brand-mark{width:52px;height:52px;border-radius:15px;background:#0a0a0a;color:#fff}.brand>div:last-child{display:flex;flex-direction:column;gap:4px}
+.auth-card h1{font-size:28px;margin:34px 0 8px}.auth-card>p{color:var(--muted);line-height:1.7;margin:0 0 24px}
+label{display:flex;flex-direction:column;gap:8px;font-size:13px;font-weight:700}
+input,select,textarea{border:1px solid var(--line);border-radius:12px;background:#fff;padding:13px 14px;color:var(--ink);outline:none}
+input:focus,select:focus,textarea:focus{border-color:#111;box-shadow:0 0 0 3px #1111}
+.auth-card form{display:grid;gap:16px}.primary,.ghost,.icon-btn,.user-chip,.sidebar button,.module-card button,.action-btn{
+  border:0;border-radius:12px;padding:12px 16px;font-weight:800
+}
+.primary{background:#0a0a0a;color:#fff}.ghost{background:#eee;color:#111}.auth-card>.ghost{width:100%;margin-top:10px}
+.message{min-height:22px;margin-top:12px;font-size:13px}.message.bad{color:var(--bad)}.message.good{color:var(--good)}
+.app{min-height:100vh;display:grid;grid-template-columns:260px 1fr;grid-template-rows:74px 1fr}
+.sidebar{grid-row:1/3;background:#0a0a0a;color:#fff;padding:22px 14px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;z-index:30}
+.brand.compact{padding:0 10px 22px}.brand.compact .brand-mark{background:#fff;color:#000}.brand.compact span{color:#777}
+.sidebar nav{display:flex;flex-direction:column;gap:3px;overflow:auto;padding-right:4px}
+.sidebar nav button{display:flex;align-items:center;gap:12px;text-align:left;background:transparent;color:#aaa;padding:11px 13px}
+.sidebar nav button:hover,.sidebar nav button.active{background:#fff;color:#000}.sidebar nav i{font-style:normal;width:23px;text-align:center}
+.sidebar-foot{margin-top:auto;border-top:1px solid #252525;padding:16px 8px 0;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#999}
+.sidebar-foot>div{display:flex;align-items:center;gap:7px}.sidebar-foot button{background:transparent;color:#aaa;padding:7px}
+.online-dot{width:8px;height:8px;border-radius:50%;background:#47c87a;box-shadow:0 0 0 4px #47c87a20}
+.topbar{grid-column:2;display:flex;align-items:center;gap:14px;padding:0 28px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
+.topbar>div:nth-child(2){display:flex;flex-direction:column;gap:3px}.topbar span{font-size:12px;color:var(--muted)}
+.top-actions{margin-left:auto;display:flex;align-items:center;gap:10px}.user-chip{background:#eee}.icon-btn{display:none;background:#eee;padding:9px 12px}
+main{grid-column:2;padding:26px;min-width:0}.hero{background:#0a0a0a;color:#fff;border-radius:26px;padding:28px;display:grid;grid-template-columns:1.5fr .8fr;gap:22px;box-shadow:var(--shadow)}
+.hero h1{font-size:32px;line-height:1.2;margin:0 0 10px}.hero p{color:#aaa;line-height:1.7;margin:0}.hero-actions{display:flex;justify-content:flex-end;align-items:center;gap:10px;flex-wrap:wrap}
+.hero .ghost{background:#fff;color:#000}.hero .primary{background:#fff;color:#000}
+.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin:18px 0}.kpi{background:#fff;border:1px solid var(--line);border-radius:16px;padding:17px;box-shadow:0 5px 15px #00000008}
+.kpi span{color:var(--muted);font-size:12px}.kpi strong{display:block;font-size:25px;margin:8px 0}.kpi small{font-size:11px;color:var(--muted)}
+.section-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:18px}.panel{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:0 6px 22px #00000008}
+.panel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:16px}.panel-head h2{font-size:18px;margin:0 0 4px}.panel-head p{font-size:12px;color:var(--muted);margin:0}
+.risk-list,.task-list,.record-list{display:grid;gap:9px}.risk,.task,.record{border:1px solid var(--line);border-radius:13px;padding:13px;display:flex;align-items:center;gap:12px}
+.risk .badge,.badge{font-size:11px;border-radius:99px;padding:5px 8px;background:#eee;white-space:nowrap}.badge.high{background:#f7dddd;color:var(--bad)}.badge.medium{background:#faecd7;color:var(--warn)}.badge.low,.badge.good{background:#dff2e7;color:var(--good)}
+.risk>div,.task>div,.record>div{min-width:0;flex:1}.risk b,.task b,.record b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.risk small,.task small,.record small{display:block;margin-top:4px;color:var(--muted);font-size:11px}
+.pipeline{display:flex;gap:8px;overflow:auto;padding-bottom:8px}.stage{min-width:110px;border:1px solid var(--line);border-radius:13px;padding:12px;background:#fafafa;position:relative}.stage.active{background:#0a0a0a;color:#fff}.stage b{display:block;font-size:18px}.stage span{font-size:11px}.stage:not(:last-child):after{content:"→";position:absolute;right:-8px;top:50%;transform:translate(50%,-50%);z-index:1;color:#999}
+.module-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.module-card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px;min-height:160px;display:flex;flex-direction:column;box-shadow:0 6px 20px #00000008}
+.module-card .icon{font-size:24px}.module-card h3{font-size:16px;margin:14px 0 7px}.module-card p{color:var(--muted);font-size:12px;line-height:1.6;margin:0}.module-card footer{margin-top:auto;display:flex;justify-content:space-between;align-items:center;padding-top:14px}.module-card button{background:#eee;padding:8px 11px}.module-card strong{font-size:19px}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px}table{width:100%;border-collapse:collapse;min-width:880px;background:#fff}th,td{text-align:left;padding:12px;border-bottom:1px solid var(--line);font-size:12px}th{background:#f6f6f4;color:#555;position:sticky;top:0}td b{font-size:13px}.table-actions{display:flex;gap:6px}.action-btn{padding:7px 9px;background:#eee;font-size:11px}.action-btn.dark{background:#111;color:#fff}
+.page-head{display:flex;justify-content:space-between;align-items:end;margin-bottom:18px}.page-head h1{margin:0 0 6px;font-size:26px}.page-head p{margin:0;color:var(--muted);font-size:13px}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.filters input,.filters select{padding:9px 11px}
+.empty{padding:38px;text-align:center;color:var(--muted)}
+dialog{border:0;border-radius:24px;padding:0;width:min(720px,calc(100% - 28px));box-shadow:0 30px 90px #0008}dialog::backdrop{background:#0009;backdrop-filter:blur(5px)}
+.dialog-card{padding:22px}.dialog-card header,.dialog-card footer{display:flex;align-items:center;justify-content:space-between;gap:12px}.dialog-card header>div{display:flex;flex-direction:column;gap:4px}.dialog-card header span{font-size:12px;color:var(--muted)}.dialog-card header button{border:0;background:#eee;border-radius:50%;width:36px;height:36px}
+.dialog-card textarea{width:100%;margin:18px 0;resize:vertical}.dialog-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.ai-preview{background:#f4f4f1;border-radius:13px;padding:14px;margin:14px 0;color:#555;font-size:12px;line-height:1.7}
+.toast{position:fixed;right:24px;bottom:24px;background:#111;color:#fff;border-radius:13px;padding:14px 18px;z-index:100;transform:translateY(120px);opacity:0;transition:.25s;box-shadow:var(--shadow)}.toast.show{transform:none;opacity:1}
+.preview-notice{position:fixed;left:12px;right:12px;bottom:12px;z-index:120;background:#fff;color:#111;border:1px solid #ddd;border-radius:18px;padding:14px 15px;box-shadow:0 18px 50px #0005;display:grid;grid-template-columns:1fr auto;gap:5px 12px;align-items:center}.preview-notice strong{font-size:14px}.preview-notice span{font-size:12px;color:#666}.preview-notice a{grid-row:1/3;grid-column:2;background:#111;color:#fff;text-decoration:none;border-radius:12px;padding:11px 13px;font-weight:800;font-size:13px;white-space:nowrap}
+@media(max-width:1180px){.kpis{grid-template-columns:repeat(3,1fr)}.module-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:900px){.app{display:block}.sidebar{position:fixed;left:-280px;width:260px;transition:.25s}.sidebar.open{left:0}.topbar{grid-column:auto;padding:0 14px;height:66px}.icon-btn{display:block}.topbar .primary{padding:10px}.user-chip{display:none}main{grid-column:auto;padding:15px}.hero{grid-template-columns:1fr}.hero-actions{justify-content:flex-start}.section-grid{grid-template-columns:1fr}.module-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.auth-card{padding:24px}.hero{padding:22px}.hero h1{font-size:26px}.kpis{grid-template-columns:repeat(2,1fr)}.module-grid{grid-template-columns:1fr}.dialog-grid{grid-template-columns:1fr}.topbar>div:nth-child(2) span{display:none}}
+
+</style>
+</head>
+<body>
+  <div id="boot" class="boot hidden">
+    <div class="boot-mark">RMS</div>
+    <div>
+      <strong>銳蒙斯 AI 成衣營運中樞</strong>
+      <span>獨立系統啟動中…</span>
+    </div>
+  </div>
+
+  <section id="authView" class="auth-view hidden" aria-label="登入">
+    <div class="auth-card">
+      <div class="brand">
+        <div class="brand-mark">RMS</div>
+        <div><b>銳蒙斯成衣開發有限公司</b><span>AI ZERO-THINKING OPERATIONS</span></div>
+      </div>
+      <h1>登入獨立營運系統</h1>
+      <p>本系統為銳蒙斯專用獨立環境，帳號、資料庫與權限不與其他公司共用。</p>
+      <form id="loginForm">
+        <label>電子郵件<input id="loginEmail" type="email" autocomplete="username" required placeholder="admin@rms-apparel.com"></label>
+        <label>密碼<input id="loginPassword" type="password" autocomplete="current-password" required minlength="8"></label>
+        <button class="primary" type="submit">登入系統</button>
+      </form>
+      <button id="demoLogin" class="ghost" type="button">進入離線展示模式</button>
+      <div id="authMessage" class="message"></div>
+      <small>正式環境啟用 Firebase Authentication；所有重要操作保留不可覆寫稽核紀錄。</small>
+    </div>
+  </section>
+
+  <div id="app" class="app">
+    <aside class="sidebar">
+      <div class="brand compact">
+        <div class="brand-mark">RMS</div>
+        <div><b>銳蒙斯 AI OS</b><span>APPAREL OPERATIONS</span></div>
+      </div>
+      <nav id="nav">
+        <button class="active"><i>⌂</i><span>營運總覽</span></button>
+        <button><i>◉</i><span>詢價需求</span></button>
+        <button><i>◫</i><span>打樣管理</span></button>
+        <button><i>▣</i><span>正式訂單</span></button>
+        <button><i>⚙</i><span>生產排程</span></button>
+        <button><i>✓</i><span>品檢返工</span></button>
+        <button><i>◎</i><span>請款收款</span></button>
+      </nav>
+      <div class="sidebar-foot">
+        <div><span class="online-dot"></span><span id="connectionText">系統正常</span></div>
+        <button id="logoutBtn">登出</button>
+      </div>
+    </aside>
+
+    <header class="topbar">
+      <button id="menuBtn" class="icon-btn" aria-label="選單">☰</button>
+      <div>
+        <strong id="pageTitle">營運總覽</strong>
+        <span id="pageSub">AI 先完成，員工只確認，老闆只處理例外</span>
+      </div>
+      <div class="top-actions">
+        <button id="globalCreate" class="primary">＋ AI 建立</button>
+        <button id="userChip" class="user-chip">管理員</button>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="hero">
+        <div><h1>銳蒙斯零思考營運中樞</h1><p>詢價、打樣、成本、報價、訂單、生產、品檢、出貨與收款集中管理。</p></div>
+        <div class="hero-actions"><button class="ghost">17 個營運模組</button><button class="primary">AI 建立詢價</button></div>
+      </section>
+      <section class="kpis">
+        <div class="kpi"><span>今日新詢價</span><strong>1</strong><small>缺件自動提醒</small></div>
+        <div class="kpi"><span>進行中訂單</span><strong>1</strong><small>交期持續監控</small></div>
+        <div class="kpi"><span>生產完成率</span><strong>46%</strong><small>即時回報</small></div>
+        <div class="kpi"><span>待核准</span><strong>0</strong><small>只顯示例外</small></div>
+        <div class="kpi"><span>應收帳款</span><strong>NT$ 67,500</strong><small>到期自動催收</small></div>
+        <div class="kpi"><span>風險提醒</span><strong>2</strong><small>依嚴重度排序</small></div>
+      </section>
+      <section class="section-grid">
+        <div class="panel"><div class="panel-head"><div><h2>AI 風險警示</h2><p>需要處理的例外集中呈現</p></div></div><div class="risk-list"><div class="risk"><span class="badge high">高風險</span><div><b>生產回報超過 24 小時</b><small>通知生產主管</small></div></div><div class="risk"><span class="badge medium">注意</span><div><b>初樣完成日接近</b><small>確認打版進度</small></div></div></div></div>
+        <div class="panel"><div class="panel-head"><div><h2>今日任務</h2><p>每個人只看下一步</p></div></div><div class="task-list"><div class="task"><span class="badge high">high</span><div><b>確認示範客戶初樣尺寸</b><small>聯絡客戶確認</small></div></div></div></div>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="aiDialog">
+    <form method="dialog" class="dialog-card">
+      <header><div><b>AI 萬用輸入中心</b><span>貼上客戶訊息、語音轉文字或原始需求</span></div><button value="cancel">×</button></header>
+      <textarea id="aiInput" rows="8" placeholder="例如：王小姐要做 300 件黑色機能 POLO 衫，S 到 3XL，左胸刺繡 Logo，希望 8/20 前交貨，預算每件 450 元…"></textarea>
+      <div class="dialog-grid">
+        <label>資料類型<select id="aiType"><option value="inquiry">客戶詢價</option><option value="production">生產回報</option><option value="quality">品檢異常</option><option value="payment">收款資訊</option></select></label>
+        <label>負責人<select id="aiOwner"><option>自動分派</option><option>業務主管</option><option>生產主管</option><option>會計</option></select></label>
+      </div>
+      <div id="aiPreview" class="ai-preview">輸入內容後，系統會自動拆解客戶、品項、數量、交期、預算與下一步。</div>
+      <footer><button value="cancel" class="ghost">取消</button><button id="aiSubmit" value="default" class="primary" type="button">建立並自動派工</button></footer>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast"></div>
+  <div id="previewNotice" class="preview-notice">
+    <div><strong>iPhone 檔案預覽模式</strong><span>點右側按鈕，使用 Safari 開啟完整互動系統。</span></div>
+    <a href="https://raw.githack.com/allpowerfull9-byte/BV-Liu/main/rms/RMS-Apparel-AI-OS-v1.2.1-mobile.html" target="_blank" rel="noopener">Safari 開啟</a>
+  </div>
+
+  <script>window.RMS_FIREBASE_CONFIG=null;window.RMS_PROJECT_ID="offline-demo";</script>
+  <script>
+const COMPANY_ID='rms_apparel';
+const VERSION='1.2.1';
+const qs=s=>document.querySelector(s);
+const qsa=s=>[...document.querySelectorAll(s)];
+const uid=()=>`rms_${Date.now()}_${Math.random().toString(36).slice(2,8)}`;
+const iso=()=>new Date().toISOString();
+const date=()=>iso().slice(0,10);
+const money=n=>`NT$ ${Math.round(Number(n||0)).toLocaleString('zh-TW')}`;
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const deep=x=>JSON.parse(JSON.stringify(x));
+
+const MODULES=[
+  {id:'inquiries',collection:'apparelInquiries',icon:'◉',name:'詢價與需求',desc:'客戶原始需求、缺件檢查與商機熱度',countKey:'inquiries'},
+  {id:'styles',collection:'apparelStyles',icon:'◇',name:'款式與規格',desc:'Style 主檔、尺寸表、圖稿與版本控制',countKey:'styles'},
+  {id:'samples',collection:'sampleOrders',icon:'◫',name:'打樣管理',desc:'初樣、修改樣、產前樣與客戶確認',countKey:'samples'},
+  {id:'bom',collection:'bomHeaders',icon:'▦',name:'BOM 與成本',desc:'主輔料、工資、損耗與完整成本',countKey:'bom'},
+  {id:'quotes',collection:'quotations',icon:'＄',name:'報價與核准',desc:'毛利防線、版本鎖定與正式報價',countKey:'quotes'},
+  {id:'orders',collection:'apparelOrders',icon:'▣',name:'正式訂單',desc:'客戶 PO、尺寸配比、交期與付款條件',countKey:'orders'},
+  {id:'purchasing',collection:'purchaseOrders',icon:'⌁',name:'採購管理',desc:'布料、輔料、包材、比價與催貨',countKey:'purchasing'},
+  {id:'production',collection:'productionOrders',icon:'⚙',name:'生產排程',desc:'裁剪、印繡、車縫、整燙與完成率',countKey:'production'},
+  {id:'quality',collection:'qualityInspections',icon:'✓',name:'品檢與返工',desc:'缺失拍照、不良率、返工與放行',countKey:'quality'},
+  {id:'shipping',collection:'shipments',icon:'➜',name:'包裝與出貨',desc:'裝箱配比、物流、簽收與證據',countKey:'shipping'},
+  {id:'receivables',collection:'receivables',icon:'◎',name:'請款與收款',desc:'付款計畫、對帳、逾期與沖帳',countKey:'receivables'},
+  {id:'complaints',collection:'customerComplaints',icon:'!',name:'客訴與返修',desc:'責任判定、補貨、折讓與成本歸屬',countKey:'complaints'},
+  {id:'customers',collection:'customers',icon:'♙',name:'客戶與商機',desc:'信用、成交率、回購與追蹤',countKey:'customers'},
+  {id:'factories',collection:'factories',icon:'▰',name:'工廠與供應商',desc:'產能、品質、準時率與自動推薦',countKey:'factories'},
+  {id:'inventory',collection:'inventoryItems',icon:'▤',name:'材料與庫存',desc:'批號、庫位、安全庫存與出入庫',countKey:'inventory'},
+  {id:'tasks',collection:'tasks',icon:'☑',name:'任務與零交接',desc:'今日任務、替補接手與完整交接',countKey:'tasks'},
+  {id:'approvals',collection:'approvalRequests',icon:'◆',name:'核准中心',desc:'低毛利、特殊付款與重大異常決策',countKey:'approvals'}
+];
+
+const PIPELINE=['新詢價','需求確認','打樣中','成本完成','待核准','已成交','待採購','生產中','待品檢','待出貨','待收款','已結案'];
+const STATUS_NEXT={
+  '新詢價':'需求確認','AI整理完成':'需求確認','需求確認':'打樣中','待打樣':'打樣中',
+  '打樣中':'成本完成','打版中':'樣品完成','樣品完成':'客戶確認','客戶確認':'成本完成',
+  '成本完成':'待核准','待估價':'待核准','待核准':'已成交','已報價':'已成交',
+  '已成交':'待採購','訂單確認':'待採購','待採購':'生產中','生產中':'待品檢',
+  '待品檢':'待出貨','品檢通過':'待出貨','待出貨':'待收款','已出貨':'待收款',
+  '待收款':'已結案','已結清':'已結案'
+};
+const TITLES={
+  dashboard:['營運總覽','AI 先完成，員工只確認，老闆只處理例外'],
+  modules:['全部模組','17 個模組形成接單到收款的完整閉環'],
+  risks:['風險與異常','交期、成本、品質、帳款與流程斷線集中處理'],
+  audit:['稽核紀錄','所有建立、修改、推進與封存均留下證據']
+};
+
+const seed={
+  mode:'demo', user:{uid:'demo-boss',displayName:'銳蒙斯管理員',role:'boss'},
+  activePage:'dashboard',
+  apparelInquiries:[
+    baseRecord({id:'inq_demo',recordNo:'INQ-20260714-001',customerName:'示範客戶',itemName:'機能 POLO 衫',quantity:300,status:'需求確認',requestedDueDate:'2026-08-20',riskLevel:'low',nextAction:'建立初樣',amount:135000})
+  ],
+  apparelStyles:[],
+  sampleOrders:[
+    baseRecord({id:'sample_demo',recordNo:'SMP-20260714-001',customerName:'示範客戶',itemName:'機能 POLO 衫',quantity:2,status:'打版中',dueDate:'2026-07-18',riskLevel:'medium',nextAction:'確認版型'})
+  ],
+  bomHeaders:[],
+  quotations:[],
+  apparelOrders:[
+    baseRecord({id:'order_demo',recordNo:'ORD-20260714-001',customerName:'示範客戶',itemName:'機能 POLO 衫',quantity:300,amount:135000,status:'生產中',dueDate:'2026-08-20',riskLevel:'low',progress:46,nextAction:'完成車縫'})
+  ],
+  purchaseOrders:[],
+  productionOrders:[
+    baseRecord({id:'prod_demo',recordNo:'PROD-20260714-001',customerName:'示範客戶',itemName:'機能 POLO 衫',quantity:300,completedQuantity:138,status:'生產中',dueDate:'2026-08-12',riskLevel:'medium',progress:46,nextAction:'完成車縫'})
+  ],
+  qualityInspections:[],shipments:[],
+  receivables:[
+    baseRecord({id:'ar_demo',recordNo:'AR-20260714-001',customerName:'示範客戶',amount:67500,paidAmount:0,paymentStatus:'未收款',status:'待收款',dueDate:'2026-08-20',riskLevel:'low',nextAction:'出貨前收尾款'})
+  ],
+  customerComplaints:[],customers:[],factories:[],inventoryItems:[],
+  tasks:[
+    baseRecord({id:'task_demo',title:'確認示範客戶初樣尺寸',status:'待處理',priority:'high',dueDate:date(),assigneeId:'demo-boss',riskLevel:'medium',nextAction:'聯絡客戶確認'})
+  ],
+  approvalRequests:[],
+  riskAlerts:[
+    baseRecord({id:'risk_1',recordNo:'RISK-001',title:'初樣完成日接近',entityType:'sampleOrders',entityId:'sample_demo',status:'未處理',riskLevel:'medium',dueDate:'2026-07-18',nextAction:'確認打版進度'}),
+    baseRecord({id:'risk_2',recordNo:'RISK-002',title:'生產回報超過 24 小時',entityType:'productionOrders',entityId:'prod_demo',status:'未處理',riskLevel:'high',dueDate:date(),nextAction:'通知生產主管'})
+  ],
+  auditLogs:[]
+};
+
+function baseRecord(data={}){
+  return {companyId:COMPANY_ID,createdBy:'system',updatedBy:'system',createdAt:iso(),updatedAt:iso(),isArchived:false,...data};
+}
+
+let state=loadLocal();
+let fb=null;
+
+function loadLocal(){
+  try{
+    const saved=JSON.parse(localStorage.getItem('rms_apparel_state')||'null');
+    return saved&&saved.companyId===COMPANY_ID?{...deep(seed),...saved}:deep(seed);
+  }catch{return deep(seed)}
+}
+function saveLocal(){state.companyId=COMPANY_ID;try{localStorage.setItem('rms_apparel_state',JSON.stringify(state))}catch(e){console.warn('Storage unavailable; running in preview memory mode',e)}}
+function toast(msg,type=''){const t=qs('#toast');t.textContent=msg;t.className=`toast show ${type}`;clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.className='toast',2600)}
+function logAudit(action,entityType,entityId,detail={}){
+  const row=baseRecord({id:uid(),actorUid:state.user?.uid||'unknown',actorName:state.user?.displayName||'',action,entityType,entityId,detail,immutable:true});
+  state.auditLogs.unshift(row);state.auditLogs=state.auditLogs.slice(0,300);saveLocal();
+  if(state.mode==='firebase'&&fb?.add)fb.add('auditLogs',row).catch(e=>console.warn('audit sync',e));
+}
+function collectionForPage(id){return MODULES.find(m=>m.id===id)?.collection}
+function rowsFor(page){return state[collectionForPage(page)]||[]}
+function counts(){
+  return {
+    inquiries:state.apparelInquiries.filter(x=>!x.isArchived).length,
+    orders:state.apparelOrders.filter(x=>!x.isArchived).length,
+    production:state.productionOrders.filter(x=>!x.isArchived&&x.status==='生產中').length,
+    approvals:state.approvalRequests.filter(x=>!x.isArchived&&x.status!=='已核准').length,
+    receivables:state.receivables.filter(x=>!x.isArchived&&x.status!=='已結清').length,
+    risks:state.riskAlerts.filter(x=>!x.isArchived&&x.status!=='已處理').length
+  };
+}
+function nav(){
+  const primary=[
+    ['dashboard','⌂','營運總覽'],['modules','▦','全部模組'],['risks','⚠','風險異常'],
+    ['inquiries','◉','詢價需求'],['samples','◫','打樣管理'],['orders','▣','正式訂單'],
+    ['production','⚙','生產排程'],['quality','✓','品檢返工'],['shipping','➜','包裝出貨'],
+    ['receivables','◎','請款收款'],['tasks','☑','今日任務'],['approvals','◆','核准中心'],['audit','≡','稽核紀錄']
+  ];
+  qs('#nav').innerHTML=primary.map(([id,icon,name])=>`<button data-page="${id}" class="${state.activePage===id?'active':''}"><i>${icon}</i><span>${name}</span></button>`).join('');
+  qsa('#nav [data-page]').forEach(b=>b.onclick=()=>showPage(b.dataset.page));
+}
+function showPage(page){
+  state.activePage=page;saveLocal();nav();
+  const m=MODULES.find(x=>x.id===page),title=TITLES[page]||[m?.name||'營運模組',m?.desc||''];
+  qs('#pageTitle').textContent=title[0];qs('#pageSub').textContent=title[1];
+  renderMain();
+  qs('.sidebar').classList.remove('open');window.scrollTo(0,0);
+}
+function renderMain(){
+  if(state.activePage==='dashboard') return renderDashboard();
+  if(state.activePage==='modules') return renderModules();
+  if(state.activePage==='risks') return renderRisks();
+  if(state.activePage==='audit') return renderAudit();
+  return renderCollection(state.activePage);
+}
+function renderDashboard(){
+  const c=counts(),revenue=state.apparelOrders.reduce((a,x)=>a+Number(x.amount||0),0),ar=state.receivables.reduce((a,x)=>a+Math.max(0,Number(x.amount||0)-Number(x.paidAmount||0)),0);
+  const activeOrder=state.apparelOrders.find(x=>!x.isArchived&&x.status!=='已結案');
+  const stageIndex=Math.max(0,PIPELINE.indexOf(activeOrder?.status||'新詢價'));
+  qs('#main').innerHTML=`
+    <section class="hero">
+      <div><h1>銳蒙斯零思考營運中樞</h1><p>詢價到收款自動流轉。員工只需回報事實，系統自動建立任務、判斷風險、通知下一站並保留完整證據。</p></div>
+      <div class="hero-actions"><button class="ghost" data-page-jump="modules">查看全部模組</button><button class="primary" data-ai-open>AI 建立詢價</button></div>
+    </section>
+    <section class="kpis">
+      ${kpi('今日新詢價',c.inquiries,'待補資料自動提醒')}
+      ${kpi('進行中訂單',c.orders,'交期風險持續計算')}
+      ${kpi('生產中',c.production,'工廠進度自動追蹤')}
+      ${kpi('待核准',c.approvals,'只顯示例外決策')}
+      ${kpi('應收帳款',money(ar),'到期自動催收')}
+      ${kpi('高風險',c.risks,'紅色項目優先處理')}
+    </section>
+    <section class="panel" style="margin-bottom:18px">
+      <div class="panel-head"><div><h2>十二階段訂單主線</h2><p>${esc(activeOrder?.recordNo||'尚無正式訂單')}｜${esc(activeOrder?.customerName||'建立第一筆詢價即可開始')}</p></div><span class="badge good">全流程閉環</span></div>
+      <div class="pipeline">${PIPELINE.map((x,i)=>`<div class="stage ${i===stageIndex?'active':''}"><b>${String(i+1).padStart(2,'0')}</b><span>${x}</span></div>`).join('')}</div>
+    </section>
+    <section class="section-grid">
+      <div class="panel"><div class="panel-head"><div><h2>AI 風險警示</h2><p>只把需要人處理的例外推到第一層</p></div><button class="action-btn" data-page-jump="risks">全部風險</button></div>${riskList(state.riskAlerts.slice(0,5))}</div>
+      <div class="panel"><div class="panel-head"><div><h2>今日任務</h2><p>每個人只看自己下一步</p></div><button class="action-btn" data-page-jump="tasks">任務中心</button></div>${taskList(state.tasks.slice(0,6))}</div>
+    </section>
+    <section class="panel" style="margin-top:18px">
+      <div class="panel-head"><div><h2>經營摘要</h2><p>目前訂單總額與未收餘額</p></div><span class="badge">${state.mode==='firebase'?'Firebase 正式環境':'離線展示環境'}</span></div>
+      <div class="kpis" style="margin:0">${kpi('訂單總額',money(revenue),'所有未封存訂單')}${kpi('未收餘額',money(ar),'依應收紀錄計算')}${kpi('系統版本',`V${VERSION}`,'獨立 RMS 發行版')}</div>
+    </section>`;
+  bindPageActions();
+}
+function kpi(label,value,sub){return `<div class="kpi"><span>${label}</span><strong>${value}</strong><small>${sub}</small></div>`}
+function riskList(rows){return `<div class="risk-list">${rows.length?rows.map(x=>`<div class="risk"><span class="badge ${esc(x.riskLevel||'low')}">${x.riskLevel==='high'?'高風險':x.riskLevel==='medium'?'注意':'正常'}</span><div><b>${esc(x.title||x.recordNo)}</b><small>${esc(x.nextAction||'等待系統判斷')}｜期限 ${esc(x.dueDate||'-')}</small></div><button class="action-btn" data-resolve-risk="${x.id}">處理</button></div>`).join(''):'<div class="empty">目前沒有未處理風險</div>'}</div>`}
+function taskList(rows){return `<div class="task-list">${rows.length?rows.map(x=>`<div class="task"><span class="badge ${x.priority==='high'?'high':'low'}">${esc(x.priority||'normal')}</span><div><b>${esc(x.title)}</b><small>${esc(x.nextAction||'完成後自動交接')}｜${esc(x.dueDate||'-')}</small></div><button class="action-btn" data-complete-task="${x.id}">${x.status==='完成'?'已完成':'完成'}</button></div>`).join(''):'<div class="empty">今日沒有待辦</div>'}</div>`}
+function renderModules(){
+  qs('#main').innerHTML=`<div class="page-head"><div><h1>17 個零思考營運模組</h1><p>所有模組使用相同資料規格、權限、封存與稽核原則。</p></div><button class="primary" data-ai-open>＋ AI 萬用輸入</button></div>
+  <div class="module-grid">${MODULES.map(m=>{const n=(state[m.collection]||[]).filter(x=>!x.isArchived).length;return `<article class="module-card"><span class="icon">${m.icon}</span><h3>${m.name}</h3><p>${m.desc}</p><footer><strong>${n}</strong><button data-page-jump="${m.id}">開啟</button></footer></article>`}).join('')}</div>`;
+  bindPageActions();
+}
+function renderRisks(){
+  qs('#main').innerHTML=`<div class="page-head"><div><h1>風險與異常中心</h1><p>交期、成本、品質、帳款與流程斷線依嚴重度排序。</p></div><button class="primary" data-scan-risk>立即重新檢測</button></div>
+  <div class="panel">${riskList([...state.riskAlerts].sort((a,b)=>({high:0,medium:1,low:2}[a.riskLevel]??3)-({high:0,medium:1,low:2}[b.riskLevel]??3)))}</div>`;
+  bindPageActions();
+}
+function renderAudit(){
+  qs('#main').innerHTML=`<div class="page-head"><div><h1>不可覆寫稽核紀錄</h1><p>正式環境稽核紀錄禁止修改及刪除。</p></div><span class="badge">${state.auditLogs.length} 筆</span></div>
+  <div class="table-wrap"><table><thead><tr><th>時間</th><th>人員</th><th>動作</th><th>資料類型</th><th>資料 ID</th><th>內容</th></tr></thead><tbody>${state.auditLogs.length?state.auditLogs.map(x=>`<tr><td>${esc(x.createdAt)}</td><td>${esc(x.actorName||x.actorUid)}</td><td><b>${esc(x.action)}</b></td><td>${esc(x.entityType)}</td><td>${esc(x.entityId)}</td><td>${esc(JSON.stringify(x.detail||{})).slice(0,100)}</td></tr>`).join(''):'<tr><td colspan="6" class="empty">操作後會自動產生稽核紀錄</td></tr>'}</tbody></table></div>`;
+}
+function renderCollection(page){
+  const m=MODULES.find(x=>x.id===page);if(!m)return showPage('dashboard');
+  const rows=(state[m.collection]||[]).filter(x=>!x.isArchived);
+  qs('#main').innerHTML=`<div class="page-head"><div><h1>${m.name}</h1><p>${m.desc}</p></div><button class="primary" data-create-record="${page}">＋ 新增</button></div>
+  <div class="filters"><input id="tableSearch" placeholder="搜尋編號、客戶、品項、狀態"><select id="statusFilter"><option value="">全部狀態</option>${[...new Set(rows.map(x=>x.status).filter(Boolean))].map(x=>`<option>${esc(x)}</option>`).join('')}</select></div>
+  <div id="collectionTable">${recordTable(rows,m)}</div>`;
+  qs('#tableSearch').oninput=filterTable;qs('#statusFilter').onchange=filterTable;bindPageActions();
+  function filterTable(){const q=qs('#tableSearch').value.toLowerCase(),s=qs('#statusFilter').value;const f=rows.filter(x=>(!q||JSON.stringify(x).toLowerCase().includes(q))&&(!s||x.status===s));qs('#collectionTable').innerHTML=recordTable(f,m);bindPageActions()}
+}
+function recordTable(rows,m){
+  return `<div class="table-wrap"><table><thead><tr><th>編號</th><th>客戶／標題</th><th>品項</th><th>數量</th><th>金額</th><th>狀態</th><th>風險</th><th>期限</th><th>下一步</th><th>操作</th></tr></thead><tbody>${rows.length?rows.map(x=>`<tr>
+  <td><b>${esc(x.recordNo||x.id)}</b></td><td>${esc(x.customerName||x.title||'-')}</td><td>${esc(x.itemName||'-')}</td><td>${Number(x.quantity||0).toLocaleString()}</td><td>${x.amount?money(x.amount):'-'}</td>
+  <td><span class="badge">${esc(x.status||'-')}</span></td><td><span class="badge ${esc(x.riskLevel||'low')}">${x.riskLevel==='high'?'高':x.riskLevel==='medium'?'中':'低'}</span></td><td>${esc(x.dueDate||x.requestedDueDate||'-')}</td><td>${esc(x.nextAction||'-')}</td>
+  <td><div class="table-actions"><button class="action-btn dark" data-advance="${m.id}" data-id="${x.id}">推進</button><button class="action-btn" data-archive="${m.id}" data-id="${x.id}">封存</button></div></td></tr>`).join(''):`<tr><td colspan="10" class="empty">尚無資料，使用「新增」或 AI 萬用輸入建立第一筆。</td></tr>`}</tbody></table></div>`;
+}
+function bindPageActions(){
+  qsa('[data-page-jump]').forEach(b=>b.onclick=()=>showPage(b.dataset.pageJump));
+  qsa('[data-ai-open]').forEach(b=>b.onclick=openAI);
+  qsa('[data-complete-task]').forEach(b=>b.onclick=()=>completeTask(b.dataset.completeTask));
+  qsa('[data-resolve-risk]').forEach(b=>b.onclick=()=>resolveRisk(b.dataset.resolveRisk));
+  qsa('[data-advance]').forEach(b=>b.onclick=()=>advance(b.dataset.advance,b.dataset.id));
+  qsa('[data-archive]').forEach(b=>b.onclick=()=>archive(b.dataset.archive,b.dataset.id));
+  qsa('[data-create-record]').forEach(b=>b.onclick=()=>quickCreate(b.dataset.createRecord));
+  qs('[data-scan-risk]')?.addEventListener('click',scanRisk);
+}
+function parseInput(text){
+  const quantity=Number((text.match(/(\d[\d,]*)\s*(?:件|pcs|PC)/i)||[])[1]?.replaceAll(',','')||0);
+  const budget=Number((text.match(/(?:預算|單價|每件)\s*(?:約|NT\$?|元)?\s*(\d[\d,]*)/i)||[])[1]?.replaceAll(',','')||0);
+  const due=(text.match(/(\d{1,2}[\/月-]\d{1,2}(?:日)?)/)||[])[1]||'';
+  const colors=[...new Set(text.match(/黑色|白色|紅色|藍色|藏青|灰色|綠色|黃色|卡其|紫色/g)||[])];
+  const product=(text.match(/POLO\s*衫|T恤|外套|背心|襯衫|制服|工作服|帽子|褲子|裙子|連身服/i)||[])[0]||'待確認品項';
+  const customer=(text.match(/([\u4e00-\u9fa5A-Za-z0-9]{2,12})(?:小姐|先生|公司|品牌)/)||[])[0]||'待確認客戶';
+  return {quantity,budget,due,colors,product,customer,confidence:Math.min(98,55+[quantity,budget,due,colors.length,product!=='待確認品項'].filter(Boolean).length*8)};
+}
+function openAI(){qs('#aiDialog').showModal();qs('#aiInput').focus()}
+qs('#aiInput').oninput=()=>{const p=parseInput(qs('#aiInput').value);qs('#aiPreview').innerHTML=`<b>AI 判斷信心 ${p.confidence}%</b><br>客戶：${esc(p.customer)}｜品項：${esc(p.product)}｜數量：${p.quantity||'待確認'}｜預算：${p.budget?money(p.budget):'待確認'}｜交期：${esc(p.due||'待確認')}｜顏色：${esc(p.colors.join('、')||'待確認')}`};
+async function aiSubmit(){
+  const text=qs('#aiInput').value.trim();if(!text)return toast('請先輸入原始需求','bad');
+  const type=qs('#aiType').value,p=parseInput(text);
+  if(state.mode==='firebase'&&fb?.call){
+    try{
+      const result=await fb.call('ingestInquiry',{text,customerName:p.customer});
+      await loadCloud();qs('#aiDialog').close();qs('#aiInput').value='';showPage(type==='inquiry'?'inquiries':'dashboard');toast(`已建立 ${result.data.recordNo}`);
+      return;
+    }catch(e){toast(`雲端建立失敗，已轉本機保護：${e.message}`,'bad')}
+  }
+  const collection=type==='inquiry'?'apparelInquiries':type==='production'?'productionOrders':type==='quality'?'qualityInspections':'receivables';
+  const id=uid(),row=baseRecord({id,recordNo:`${type.toUpperCase().slice(0,4)}-${Date.now()}`,customerName:p.customer,itemName:p.product,quantity:p.quantity,targetBudget:p.budget,requestedDueDate:p.due,colors:p.colors,rawText:text,status:type==='inquiry'?'AI整理完成':'待確認',riskLevel:(!p.quantity||!p.due)?'medium':'low',nextAction:type==='inquiry'?'確認缺少規格並建立打樣單':'主管確認並派工'});
+  state[collection].unshift(row);
+  state.tasks.unshift(baseRecord({id:uid(),title:`補齊資料｜${p.product}`,status:'待處理',priority:'high',dueDate:date(),assigneeId:state.user.uid,riskLevel:'medium',nextAction:'完成缺件確認'}));
+  logAudit('AI_CREATE',collection,id,{parsed:p});
+  saveLocal();qs('#aiDialog').close();qs('#aiInput').value='';showPage(type==='inquiry'?'inquiries':'dashboard');toast('AI 已建立資料並自動派工');
+}
+async function completeTask(id){const x=state.tasks.find(i=>i.id===id);if(!x)return;x.status='完成';x.updatedAt=iso();x.updatedBy=state.user.uid;logAudit('COMPLETE_TASK','tasks',id);await persist('tasks',x);showPage(state.activePage);toast('任務完成，下一站已收到交接')}
+async function resolveRisk(id){const x=state.riskAlerts.find(i=>i.id===id);if(!x)return;x.status='已處理';x.updatedAt=iso();x.updatedBy=state.user.uid;logAudit('RESOLVE_RISK','riskAlerts',id);await persist('riskAlerts',x);showPage(state.activePage);toast('風險已處理')}
+async function advance(page,id){
+  const collection=collectionForPage(page),x=state[collection].find(i=>i.id===id);if(!x)return;
+  const next=STATUS_NEXT[x.status]||'完成';
+  if(state.mode==='firebase'&&fb?.call){try{await fb.call('advanceWorkflow',{collection,id,nextStatus:next})}catch(e){return toast(e.message,'bad')}}
+  x.history=[...(x.history||[]),{from:x.status,to:next,at:iso(),by:state.user.uid}];x.status=next;x.updatedAt=iso();x.updatedBy=state.user.uid;
+  logAudit('ADVANCE_WORKFLOW',collection,id,{next});await persist(collection,x);showPage(page);toast(`流程已推進：${next}`);
+}
+async function archive(page,id){
+  const collection=collectionForPage(page),x=state[collection].find(i=>i.id===id);if(!x)return;
+  x.isArchived=true;x.archivedAt=iso();x.archivedBy=state.user.uid;x.updatedAt=iso();x.updatedBy=state.user.uid;
+  logAudit('ARCHIVE_RECORD',collection,id);await persist(collection,x);showPage(page);toast('資料已封存，未刪除');
+}
+async function quickCreate(page){
+  if(page==='inquiries')return openAI();
+  const m=MODULES.find(x=>x.id===page),collection=m.collection,id=uid();
+  const row=baseRecord({id,recordNo:`${page.slice(0,4).toUpperCase()}-${Date.now()}`,customerName:'待確認客戶',itemName:'待確認品項',status:'草稿',riskLevel:'low',nextAction:'補齊資料',createdBy:state.user.uid,updatedBy:state.user.uid});
+  state[collection].unshift(row);logAudit('QUICK_CREATE',collection,id);await persist(collection,row);showPage(page);toast(`已建立${m.name}草稿`);
+}
+async function scanRisk(){
+  if(state.mode==='firebase'&&fb?.call){
+    try{
+      const result=await fb.call('runRiskScan',{});
+      await loadCloud();
+      logAudit('RISK_SCAN','system','all',{added:result.data.count,source:'cloud'});
+      showPage('risks');toast(`雲端檢測完成，共 ${result.data.count} 個風險`);return;
+    }catch(e){toast(`雲端檢測失敗，轉本機保護：${e.message}`,'bad')}
+  }
+  const now=new Date(),soon=new Date(Date.now()+3*86400000);let added=0;
+  MODULES.forEach(m=>(state[m.collection]||[]).filter(x=>!x.isArchived).forEach(x=>{
+    const due=x.dueDate||x.requestedDueDate;if(!due)return;const d=new Date(due);
+    if(d<=soon&&!['已結案','已結清','完成'].includes(x.status)){
+      const id=`${m.collection}_${x.id}`;let r=state.riskAlerts.find(y=>y.id===id);
+      const data={title:`${d<now?'已逾期':'即將到期'}｜${x.recordNo||x.id}`,entityType:m.collection,entityId:x.id,status:'未處理',riskLevel:d<now?'high':'medium',dueDate:due,nextAction:x.nextAction||'主管處理'};
+      if(r)Object.assign(r,data,{updatedAt:iso()});else{state.riskAlerts.push(baseRecord({id,...data}));added++}
+    }
+  }));
+  logAudit('RISK_SCAN','system','all',{added,source:'local'});saveLocal();showPage('risks');toast(`檢測完成，新增 ${added} 個風險`);
+}
+async function persist(collection,row){
+  saveLocal();
+  if(state.mode==='firebase'&&fb?.set){
+    try{await fb.set(collection,row.id,row)}catch(e){toast(`雲端同步失敗，資料已保存在本機：${e.message}`,'bad')}
+  }
+}
+
+async function setupFirebase(){
+  if(!window.RMS_FIREBASE_CONFIG)return false;
+  try{
+    const appMod=await import('https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js');
+    const authMod=await import('https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js');
+    const dbMod=await import('https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js');
+    const fnMod=await import('https://www.gstatic.com/firebasejs/11.10.0/firebase-functions.js');
+    const app=appMod.initializeApp(window.RMS_FIREBASE_CONFIG);
+    const auth=authMod.getAuth(app),db=dbMod.getFirestore(app),functions=fnMod.getFunctions(app,'asia-east1');
+    fb={
+      auth,db,authMod,dbMod,
+      call:(name,data)=>fnMod.httpsCallable(functions,name)(data),
+      set:(collection,id,row)=>dbMod.setDoc(dbMod.doc(db,collection,id),stripUndefined({...row,companyId:COMPANY_ID,updatedAt:dbMod.serverTimestamp()}),{merge:true}),
+      add:(collection,row)=>dbMod.addDoc(dbMod.collection(db,collection),stripUndefined({...row,companyId:COMPANY_ID,createdAt:dbMod.serverTimestamp(),updatedAt:dbMod.serverTimestamp()}))
+    };
+    authMod.onAuthStateChanged(auth,async user=>{
+      if(user){await enterFirebase(user)}else showAuth();
+    });
+    return true;
+  }catch(e){console.error(e);qs('#connectionText').textContent='雲端初始化失敗';return false}
+}
+function stripUndefined(obj){return Object.fromEntries(Object.entries(obj).filter(([,v])=>v!==undefined))}
+async function enterFirebase(user){
+  try{
+    const profileRef=fb.dbMod.doc(fb.db,'users',user.uid);let snap=await fb.dbMod.getDoc(profileRef);
+    if(!snap.exists()){await fb.call('initializeUser',{displayName:user.displayName||user.email});snap=await fb.dbMod.getDoc(profileRef)}
+    const profile=snap.data();
+    if(profile.role==='pending')throw new Error('帳號已建立，等待管理員開通權限。');
+    state.user={uid:user.uid,displayName:profile.displayName||user.email,role:profile.role,email:user.email};
+    state.mode='firebase';await loadCloud();enterApp();
+  }catch(e){await fb.authMod.signOut(fb.auth);showAuth();qs('#authMessage').textContent=e.message;qs('#authMessage').className='message bad'}
+}
+async function loadCloud(){
+  if(!fb?.db)return;
+  for(const m of MODULES){
+    try{
+      const q=fb.dbMod.query(fb.dbMod.collection(fb.db,m.collection),fb.dbMod.where('companyId','==',COMPANY_ID),fb.dbMod.limit(250));
+      const snap=await fb.dbMod.getDocs(q);state[m.collection]=snap.docs.map(d=>({id:d.id,...normalizeTimestamps(d.data())}));
+    }catch(e){console.warn(m.collection,e)}
+  }
+  try{
+    const q=fb.dbMod.query(fb.dbMod.collection(fb.db,'riskAlerts'),fb.dbMod.where('companyId','==',COMPANY_ID),fb.dbMod.limit(250));
+    const snap=await fb.dbMod.getDocs(q);state.riskAlerts=snap.docs.map(d=>({id:d.id,...normalizeTimestamps(d.data())}));
+  }catch{}
+  try{
+    const q=fb.dbMod.query(fb.dbMod.collection(fb.db,'auditLogs'),fb.dbMod.where('companyId','==',COMPANY_ID),fb.dbMod.limit(250));
+    const snap=await fb.dbMod.getDocs(q);state.auditLogs=snap.docs.map(d=>({id:d.id,...normalizeTimestamps(d.data())}));
+  }catch{}
+  saveLocal();
+}
+function normalizeTimestamps(o){const r={};for(const [k,v] of Object.entries(o))r[k]=v&&typeof v.toDate==='function'?v.toDate().toISOString():v;return r}
+function showAuth(){qs('#boot').classList.add('hidden');qs('#app').classList.add('hidden');qs('#authView').classList.remove('hidden')}
+function enterApp(){
+  qs('#previewNotice')?.classList.add('hidden');
+  qs('#boot').classList.add('hidden');qs('#authView').classList.add('hidden');qs('#app').classList.remove('hidden');
+  qs('#userChip').textContent=state.user.displayName||'管理員';qs('#connectionText').textContent=state.mode==='firebase'?'Firebase 正常':'離線展示';
+  nav();showPage(state.activePage||'dashboard');window.RMS_READY=true;
+}
+qs('#loginForm').addEventListener('submit',async e=>{
+  e.preventDefault();const email=qs('#loginEmail').value.trim(),password=qs('#loginPassword').value;
+  qs('#authMessage').textContent='登入中…';qs('#authMessage').className='message';
+  if(!fb)return qs('#authMessage').textContent='正式 Firebase 尚未建立，請使用展示模式。';
+  try{await fb.authMod.signInWithEmailAndPassword(fb.auth,email,password)}catch(err){qs('#authMessage').textContent=authError(err);qs('#authMessage').className='message bad'}
+});
+function authError(e){return ({'auth/invalid-credential':'帳號或密碼錯誤。','auth/too-many-requests':'嘗試次數過多，請稍後再試。','auth/user-disabled':'帳號已停用。'}[e.code]||e.message)}
+qs('#demoLogin').onclick=()=>{state=deep(seed);state.mode='demo';saveLocal();enterApp()};
+qs('#logoutBtn').onclick=async()=>{if(fb?.auth&&state.mode==='firebase')await fb.authMod.signOut(fb.auth);else{try{localStorage.removeItem('rms_apparel_state')}catch(e){}location.reload()}};
+qs('#globalCreate').onclick=openAI;qs('#aiSubmit').onclick=aiSubmit;qs('#menuBtn').onclick=()=>qs('.sidebar').classList.toggle('open');
+window.addEventListener('click',e=>{if(innerWidth<900&&!qs('.sidebar').contains(e.target)&&!qs('#menuBtn').contains(e.target))qs('.sidebar').classList.remove('open')});
+if('serviceWorker'in navigator&&/^https?:$/.test(location.protocol)&&location.hostname.endsWith('web.app'))window.addEventListener('load',()=>navigator.serviceWorker.register('/service-worker.js').catch(console.warn));
+
+(async()=>{
+  const demo=true;
+  if(demo){state=deep(seed);state.mode='demo';saveLocal();enterApp();return}
+  const configured=await setupFirebase();
+  if(!configured)showAuth();
+})();
+
+</script>
+</body>
+</html>
